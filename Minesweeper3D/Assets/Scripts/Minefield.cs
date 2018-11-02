@@ -8,6 +8,7 @@ namespace Minesweeper {
         public GameObject _Grid; // Parent object of all Generation code.
         public GameObject Cube; // Cube prefab that all tiles share.
         public GameObject Progress; // Progress bar object to hook into GenerateMinefield()
+        public Camera camera;
 
         public float MineCount = 10; // How many mines should be genereated in the field.
         public float TilePadding = 2.5f; // How much spacing should be added between tiles.
@@ -63,10 +64,8 @@ namespace Minesweeper {
             slider.maxValue = tiles.Length;
 
             // Calculate the end size of the grid and reposition origin point
-            float equationX = MINEFIELD_WIDTH * TilePadding * TileSize;
-            float equationY = MINEFIELD_HEIGHT * TilePadding * TileSize;
-            float equationZ = MINEFIELD_DEPTH * TilePadding * TileSize;
-            _Grid.transform.position = new Vector3(equationX / 2, equationY / 2, equationZ / 2);
+            _Grid.transform.position = new Vector3(TotalWidth / 2, TotalHeight / 2, TotalDepth / 2);
+            camera.GetComponent<Control.CameraControls>().CenterCamera();
 
             int y = 0, x = 0, z = 0;
             GameObject[] layers = new GameObject[MINEFIELD_HEIGHT]; // Layers to nest objects inside of.
@@ -103,7 +102,7 @@ namespace Minesweeper {
                 slider.value += 1;
                 yield return null;
             }
-            
+
             // Deactivate on completion
             Progress.SetActive(false);
         }
@@ -161,11 +160,11 @@ namespace Minesweeper {
             }
         }
 
-        public int TotalWidth
+        public float TotalWidth
         {
             get
             {
-                return (int)(MINEFIELD_WIDTH * TileSize * TilePadding);
+                return (MINEFIELD_WIDTH * TileSize * TilePadding);
             }
         }
 
@@ -182,11 +181,11 @@ namespace Minesweeper {
             }
         }
 
-        public int TotalHeight
+        public float TotalHeight
         {
             get
             {
-                return (int)(MINEFIELD_HEIGHT * TileSize * TilePadding);
+                return (MINEFIELD_HEIGHT * TileSize * TilePadding);
             }
         }
 
@@ -203,11 +202,11 @@ namespace Minesweeper {
             }
         }
 
-        public int TotaldDepth
+        public float TotalDepth
         {
             get
             {
-                return (int)(MINEFIELD_DEPTH * TileSize * TilePadding);
+                return (MINEFIELD_DEPTH * TileSize * TilePadding);
             }
         }
     }

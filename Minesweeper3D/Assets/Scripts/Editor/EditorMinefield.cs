@@ -19,9 +19,9 @@ namespace Minesweeper {
             EditorGUILayout.LabelField("Minefield Size", centered);
 
             EditorGUILayout.BeginVertical();
-            field.SetMinefieldWidth(EditorGUILayout.IntField("Width", field.GetMinefieldWidth()));
-            field.SetMinefieldHeight(EditorGUILayout.IntField("Height", field.GetMinefieldHeight()));
-            field.SetMinefieldDepth(EditorGUILayout.IntField("Depth", field.GetMinefieldDepth()));
+            field.MinefieldWidth = EditorGUILayout.IntField("Width", field.MinefieldWidth);
+            field.MinefieldHeight = EditorGUILayout.IntField("Height", field.MinefieldHeight);
+            field.MinefieldDepth = EditorGUILayout.IntField("Depth", field.MinefieldDepth);
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.Space();
