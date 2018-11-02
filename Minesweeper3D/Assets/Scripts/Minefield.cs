@@ -156,12 +156,20 @@ namespace Minesweeper {
             return MINEFIELD_WIDTH;
         }
 
+        public int GetTotalWidth() {
+            return (int) (MINEFIELD_WIDTH * TileSize * TilePadding);
+        }
+
         public void SetMinefieldHeight(int height) {
             MINEFIELD_HEIGHT = height;
         }
 
         public int GetMinefieldHeight() {
             return MINEFIELD_HEIGHT;
+        }
+
+        public int GetTotalHeight() {
+            return (int)(MINEFIELD_HEIGHT * TileSize * TilePadding);
         }
 
         public void SetMinefieldDepth(int depth) {
@@ -172,6 +180,10 @@ namespace Minesweeper {
             return MINEFIELD_DEPTH;
         }
 
+        public int GetTotaldDepth() {
+            return (int)(MINEFIELD_DEPTH * TileSize * TilePadding);
+        }
+
     }
 
     [System.Serializable]
@@ -180,9 +192,13 @@ namespace Minesweeper {
         public Color color;
         private Vector3 tileIndex;
 
+        private Material mat;
+
         public Material GetMaterial() {
-            Material mat = new Material(Shader.Find("VertexLit"));
-            mat.color = color;
+            if (mat == null) {
+                mat = new Material(Shader.Find("VertexLit"));
+                mat.color = color;
+            }
             return mat;
         }
 
