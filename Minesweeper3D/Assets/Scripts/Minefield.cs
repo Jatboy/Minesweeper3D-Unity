@@ -148,42 +148,68 @@ namespace Minesweeper {
             }
         }
 
-        public void SetMinefieldWidth(int width) {
-            MINEFIELD_WIDTH = width;
+        public int MinefieldWidth
+        {
+            get
+            {
+                return MINEFIELD_WIDTH;
+            }
+
+            set
+            {
+                MINEFIELD_WIDTH = value;
+            }
         }
 
-        public int GetMinefieldWidth() {
-            return MINEFIELD_WIDTH;
+        public int TotalWidth
+        {
+            get
+            {
+                return (int)(MINEFIELD_WIDTH * TileSize * TilePadding);
+            }
         }
 
-        public int GetTotalWidth() {
-            return (int) (MINEFIELD_WIDTH * TileSize * TilePadding);
+        public int MinefieldHeight
+        {
+            get
+            {
+                return MINEFIELD_HEIGHT;
+            }
+
+            set
+            {
+                MINEFIELD_HEIGHT = value;
+            }
         }
 
-        public void SetMinefieldHeight(int height) {
-            MINEFIELD_HEIGHT = height;
+        public int TotalHeight
+        {
+            get
+            {
+                return (int)(MINEFIELD_HEIGHT * TileSize * TilePadding);
+            }
         }
 
-        public int GetMinefieldHeight() {
-            return MINEFIELD_HEIGHT;
+        public int MinefieldDepth
+        {
+            get
+            {
+                return MINEFIELD_DEPTH;
+            }
+
+            set
+            {
+                MINEFIELD_DEPTH = value;
+            }
         }
 
-        public int GetTotalHeight() {
-            return (int)(MINEFIELD_HEIGHT * TileSize * TilePadding);
+        public int TotaldDepth
+        {
+            get
+            {
+                return (int)(MINEFIELD_DEPTH * TileSize * TilePadding);
+            }
         }
-
-        public void SetMinefieldDepth(int depth) {
-            MINEFIELD_DEPTH = depth;
-        }
-
-        public int GetMinefieldDepth() {
-            return MINEFIELD_DEPTH;
-        }
-
-        public int GetTotaldDepth() {
-            return (int)(MINEFIELD_DEPTH * TileSize * TilePadding);
-        }
-
     }
 
     [System.Serializable]
