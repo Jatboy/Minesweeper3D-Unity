@@ -24,6 +24,11 @@ namespace Minesweeper {
         private Coroutine routine; // Coroutine variable for calling StopCoroutine()
         private GameObject[,,] tileObjects; // Physical Tile Objects
 
+        void Awake()
+        {
+            transform.position = Vector3.zero;
+        }
+
         /// <summary>
         /// Iterate through children of the _Grid object and delete them.
         /// </summary>
@@ -103,6 +108,8 @@ namespace Minesweeper {
                 yield return null;
             }
 
+            _Grid.transform.position = Vector3.zero;
+            camera.GetComponent<Control.CameraControls>().CenterCamera();
             // Deactivate on completion
             Progress.SetActive(false);
         }
