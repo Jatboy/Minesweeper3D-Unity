@@ -11,4 +11,4 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: 5
   m_EditorClassIdentifier: Assembly-CSharp:Minesweeper:Tile
-  prefab: {fileID: 1706617337043530, guid: 3d8252c9160e9c6468968ac67f1a0660, type: 2}
+  color: {r: 0.48235297, g: 0, b: 0, a: 1}
