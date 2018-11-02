@@ -5,28 +5,27 @@ using Minesweeper;
 
 namespace Minesweeper {
     public class Minefield : MonoBehaviour {
-        public GameObject _Grid;
-        public GameObject Cube;
-        public GameObject Progress;
+        public GameObject _Grid; // Parent object of all Generation code.
+        public GameObject Cube; // Cube prefab that all tiles share.
+        public GameObject Progress; // Progress bar object to hook into GenerateMinefield()
 
-        public float MineCount = 10;
-        public float TilePadding = 2.5f;
-        public float TileSize = 1f;
-        public Tile[] tilePrefabs;
+        public float MineCount = 10; // How many mines should be genereated in the field.
+        public float TilePadding = 2.5f; // How much spacing should be added between tiles.
+        public float TileSize = 1f; // Size of tiles.
+        public Tile[] tilePrefabs; // List of all the possible tile options.
 
+        // X,Y,Z Dimensions of the Minefield
         private int MINEFIELD_WIDTH = 8;
         private int MINEFIELD_HEIGHT = 8;
         private int MINEFIELD_DEPTH = 8;
 
-        private Tile[,,] tiles;
-        private Coroutine routine;
-        private GameObject[,,] tileObjects;
-        
-        void Start() {
-            tiles = new Tile[MINEFIELD_HEIGHT, MINEFIELD_WIDTH, MINEFIELD_DEPTH];
-            tileObjects = new GameObject[MINEFIELD_HEIGHT, MINEFIELD_WIDTH, MINEFIELD_DEPTH];
-        }
+        private Tile[,,] tiles; // TileData Array
+        private Coroutine routine; // Coroutine variable for calling StopCoroutine()
+        private GameObject[,,] tileObjects; // Physical Tile Objects
 
+        /// <summary>
+        /// Iterate through children of the _Grid object and delete them.
+        /// </summary>
         public void DestroyMinefield() {
             if(routine != null)
                 StopCoroutine(routine);
@@ -36,6 +35,9 @@ namespace Minesweeper {
             }
         }
 
+        /// <summary>
+        /// Calls the required methods to create a new minefield.
+        /// </summary>
         public void CreateMinefield() {
             if (Application.isPlaying)
                 routine = StartCoroutine(GenerateMinefield());
@@ -43,30 +45,38 @@ namespace Minesweeper {
                 GenerateEditorMinefield();
         }
 
+        /// <summary>
+        /// Generates the Minefield.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator GenerateMinefield() {
             DestroyMinefield();
 
+            // Initalize the arrays.
             tiles = new Tile[MINEFIELD_HEIGHT, MINEFIELD_WIDTH, MINEFIELD_DEPTH];
             tileObjects = new GameObject[MINEFIELD_HEIGHT, MINEFIELD_WIDTH, MINEFIELD_DEPTH];
 
+            // Display the progress bar and update its values.
             Progress.SetActive(true);
             Slider slider = Progress.GetComponentInChildren<Slider>();
             slider.value = 0;
             slider.maxValue = tiles.Length;
 
+            // Calculate the end size of the grid and reposition origin point
             float equationX = MINEFIELD_WIDTH * TilePadding * TileSize;
             float equationY = MINEFIELD_HEIGHT * TilePadding * TileSize;
             float equationZ = MINEFIELD_DEPTH * TilePadding * TileSize;
             _Grid.transform.position = new Vector3(equationX / 2, equationY / 2, equationZ / 2);
 
             int y = 0, x = 0, z = 0;
-            GameObject[] layers = new GameObject[MINEFIELD_HEIGHT];
+            GameObject[] layers = new GameObject[MINEFIELD_HEIGHT]; // Layers to nest objects inside of.
             while (true) {
-                if (layers[y] == null) {
+                if (layers[y] == null) { // Initalize the current layer if it doesn't exist.
                     layers[y] = new GameObject("Layer " + (y + 1));
                     layers[y].transform.SetParent(_Grid.transform);
                 }
 
+                // Create tile and its data
                 Tile tile = tilePrefabs[Random.Range(0, tilePrefabs.Length)];
                 tile.SetTileIndex(new Vector3(x, y, z));
 
@@ -76,6 +86,7 @@ namespace Minesweeper {
                 tileObjects[y,x,z] = tileObj;
                 tiles[y,x,z] = tile;
 
+                // Increment current position in the array
                 x++;
                 if (x == MINEFIELD_WIDTH) {
                     x = 0;
@@ -88,13 +99,18 @@ namespace Minesweeper {
                 if (y == MINEFIELD_HEIGHT)
                     break;
 
+                // Increase slider progress
                 slider.value += 1;
                 yield return null;
             }
-
+            
+            // Deactivate on completion
             Progress.SetActive(false);
         }
 
+        /// <summary>
+        /// Non-coroutine version of GenerateMinefield() for attmepted use in the Editor when not playing.
+        /// </summary>
         public void GenerateEditorMinefield() {
             DestroyMinefield();
 
