@@ -113,6 +113,34 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &30401233
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 30401234}
+  m_Layer: 2
+  m_Name: _Middle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &30401234
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 30401233}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1577412956}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &89247136
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,14 +441,9 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114814873300529852, guid: 942a6f0f3631d354a9a1c672f2a62c8c,
         type: 2}
-      propertyPath: _Grid
+      propertyPath: Grid
       value: 
       objectReference: {fileID: 1577412955}
-    - target: {fileID: 114814873300529852, guid: 942a6f0f3631d354a9a1c672f2a62c8c,
-        type: 2}
-      propertyPath: Cube
-      value: 
-      objectReference: {fileID: 100000, guid: edd463713fbb0994586dc14ea15406f9, type: 3}
     - target: {fileID: 114814873300529852, guid: 942a6f0f3631d354a9a1c672f2a62c8c,
         type: 2}
       propertyPath: Progress
@@ -677,7 +700,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1577412956}
-  - component: {fileID: 1577412957}
   m_Layer: 2
   m_Name: _Grid
   m_TagString: Untagged
@@ -694,22 +716,11 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 30401234}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1577412957
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1577412955}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1916837701
 GameObject:
   m_ObjectHideFlags: 0

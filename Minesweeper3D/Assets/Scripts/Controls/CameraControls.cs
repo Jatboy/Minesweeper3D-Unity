@@ -1,15 +1,9 @@
 ﻿using Minesweeper;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Assets.Settings;
 
-namespace Control
-{
-    public class CameraControls : MonoBehaviour
-    {
-
-        private Camera camera;
+namespace Minesweeper {
+    public class CameraControls : MonoBehaviour {
         public Minefield minefield;
 
         private float maxDistance;
@@ -19,75 +13,57 @@ namespace Control
         //private Bounds bounds;
         //public Vector3 offset;
 
-        void Start()
-        {
-            camera = GetComponent<Camera>();
-            if (camera == null || minefield == null)
-                throw new MissingReferenceException();
-            minefield.camera = camera;
+        void Start() {
             SetMaxDistance();
         }
 
-        void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
+        void Update() {
+            if (Input.GetMouseButtonDown(0)) {
                 RaycastHit hit;
-                if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit, 1000f))
-                {
-                    Debug.DrawLine(camera.transform.position, hit.point, Color.white);
-                    hit.collider.transform.GetComponent<Renderer>().material.color = Random.ColorHSV(); // Test hit detection
-                    // Destroy(hit.collider.gameObject); // Alternate test hit detection
+                if (Physics.Raycast(GetComponent<Camera>().ScreenPointToRay(Input.mousePosition), out hit, 1000f)) {
+                    Debug.DrawLine(transform.position, hit.point, Color.white);
+                    //hit.collider.transform.GetComponent<Renderer>().material.color = Random.ColorHSV(); // Test hit detection
+                    Destroy(hit.collider.gameObject); // Alternate test hit detection
                 }
             }
             MoveCamera();
             Inputs();
         }
 
-        private void FixedUpdate()
-        {
+        void FixedUpdate() {
             MoveCamera();
         }
 
-        public void Inputs()
-        {
+        public void Inputs() {
 
         }
 
-        public void MoveCamera()
-        {
-            
-            if(Input.GetKey(KeyBinding.MoveLeft) ^ Input.GetKey(KeyBinding.MoveRight))
-            {
-                camera.transform.LookAt(minefield.Middle);
-                if (Input.GetKey(KeyBinding.MoveLeft))
-                {
-                    
-                    camera.transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
-                }
-                else
-                {
-                    camera.transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
-                }
-                camera.transform.LookAt(minefield.Middle);
-            }
-            if (Input.GetKey(KeyBinding.MoveUp) ^ Input.GetKey(KeyBinding.MoveDown))
-            {
+        public void MoveCamera() {
+            // WIP New Code
+            /*Vector3 velocity = new Vector3(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Horizontal"));
+            transform.RotateAround(minefield.Middle, velocity, 20 * Time.deltaTime);*/
 
-                if ((camera.transform.rotation.eulerAngles.x >= 0 && camera.transform.rotation.eulerAngles.x < 89) || (camera.transform.rotation.eulerAngles.x <= 360 && camera.transform.rotation.eulerAngles.x > 271))
-                {
-                    if (Input.GetKey(KeyBinding.MoveUp))
-                    {
-                            camera.transform.Translate(Vector3.up * moveSpeed * Time.deltaTime);
+            CenterCamera();
+            if (Input.GetKey(KeyBinding.MoveLeft) ^ Input.GetKey(KeyBinding.MoveRight)) {
+                if (Input.GetKey(KeyBinding.MoveLeft)) {
+                    transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
+                }
+                else {
+                    transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
+                }
+                transform.LookAt(minefield.Middle);
+            }
+            if (Input.GetKey(KeyBinding.MoveUp) ^ Input.GetKey(KeyBinding.MoveDown)) {
+                if ((transform.rotation.eulerAngles.x >= 0 && transform.rotation.eulerAngles.x < 89) || (transform.rotation.eulerAngles.x <= 360 && transform.rotation.eulerAngles.x > 271)) {
+                    if (Input.GetKey(KeyBinding.MoveUp)) {
+                        transform.Translate(Vector3.up * moveSpeed * Time.deltaTime);
                     }
-                    else
-                    {
-                        camera.transform.Translate(Vector3.down * moveSpeed * Time.deltaTime);
+                    else {
+                        transform.Translate(Vector3.down * moveSpeed * Time.deltaTime);
                     }
                 }
-                camera.transform.LookAt(minefield.Middle);
+                transform.LookAt(minefield.Middle);
             }
-
         }
 
 
@@ -95,34 +71,30 @@ namespace Control
         /// <summary>
         /// Force the camera to update it's data depending on the minefield.
         /// </summary>
-        public void UpdateCamera()
-        {
+        public void UpdateCamera() {
             SetMaxDistance();
         }
 
-        public void UpdateCameraDistance()
-        {
-            transform.Translate(new Vector3(0, 0, -maxDistance), minefield._Grid.transform);
+        public void UpdateCameraDistance() {
+            transform.Translate(new Vector3(0, 0, -maxDistance), minefield.Grid.transform.GetChild(0));
 
             /* Vector3 center = bounds.center;
              Vector3 newPosition = center + offset;
              transform.position = newPosition;*/
         }
 
-        public void CenterCamera()
-        {
+        public void CenterCamera() {
             SetMaxDistance();
-            camera.transform.position = new Vector3(minefield.Middle.x, minefield.Middle.y, minefield.Middle.z - maxDistance);
-            camera.transform.LookAt(minefield.Middle);
+            transform.position = Vector3.Lerp(transform.position, new Vector3(minefield.Middle.x, minefield.Middle.y, minefield.Middle.z - maxDistance), Time.deltaTime);
+            transform.LookAt(minefield.Middle);
         }
 
-        private void SetMaxDistance()
-        {
-            maxDistance = minefield.TotalWidth;
-            if (minefield.TotalHeight > maxDistance)
-                maxDistance = minefield.TotalHeight;
-            if (minefield.TotalDepth > maxDistance)
-                maxDistance = minefield.TotalDepth;
+        private void SetMaxDistance() {
+            maxDistance = minefield.TotalSize.x;
+            if (minefield.TotalSize.y > maxDistance)
+                maxDistance = minefield.TotalSize.y;
+            if (minefield.TotalSize.y > maxDistance)
+                maxDistance = minefield.TotalSize.z;
 
             maxDistance = (maxDistance / 2);
             maxDistance += (maxDistanceOffset * maxDistance);

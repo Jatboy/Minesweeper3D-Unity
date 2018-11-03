@@ -4,93 +4,65 @@ using UnityEngine.UI;
 using Minesweeper;
 
 namespace Minesweeper {
+
     [RequireComponent(typeof(BoxCollider))]
     public class Minefield : MonoBehaviour {
-        public GameObject _Grid; // Parent object of all Generation code.
-        public GameObject Cube; // Cube prefab that all tiles share.
-        public GameObject Progress; // Progress bar object to hook into GenerateMinefield()
-        public Camera camera;
+        public GameObject Grid;
+        public GameObject Prefab; 
+        public GameObject Progress;
 
-        public float MineCount = 10; // How many mines should be genereated in the field.
-        public float TilePadding = 4f; // How much spacing should be added between tiles.
-        public float TileSize = 1f; // Size of tiles.
-        public Tile[] tilePrefabs; // List of all the possible tile options.
+        public float MineCount = 10;
+        public float TilePadding = 4f; 
+        public float TileSize = 1f;
 
-        // X,Y,Z Dimensions of the Minefield
         private int MINEFIELD_WIDTH = 8;
         private int MINEFIELD_HEIGHT = 8;
         private int MINEFIELD_DEPTH = 8;
 
-        private Tile[,,] tiles; // TileData Array
-        private Coroutine routine; // Coroutine variable for calling StopCoroutine()
-        private GameObject[,,] tileObjects; // Physical Tile Objects
+        private Slider slider;
+        private Tile[,,] tiles;
+        private Coroutine routine;
+        private GameObject[,,] tileObjects;
 
-        void Awake() {
-            transform.position = Vector3.zero;
+        public void CreateMinefield() {
+            routine = StartCoroutine(GenerateMinefield());
         }
 
-        /// <summary>
-        /// Iterate through children of the _Grid object and delete them.
-        /// </summary>
         public void DestroyMinefield() {
             if (routine != null)
                 StopCoroutine(routine);
 
-            for (int i = 0; i < _Grid.transform.childCount; i++) {
-                Destroy(_Grid.transform.GetChild(i).gameObject);
+            for (int i = 1; i < Grid.transform.childCount; i++) {
+                Destroy(Grid.transform.GetChild(i).gameObject);
             }
         }
 
-        /// <summary>
-        /// Calls the required methods to create a new minefield.
-        /// </summary>
-        public void CreateMinefield() {
-            if (Application.isPlaying)
-                routine = StartCoroutine(GenerateMinefield());
-            else
-                GenerateEditorMinefield();
-        }
-
-        /// <summary>
-        /// Generates the Minefield.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerator GenerateMinefield() {
+        private IEnumerator GenerateMinefield() {
             DestroyMinefield();
 
             tiles = new Tile[MINEFIELD_HEIGHT, MINEFIELD_WIDTH, MINEFIELD_DEPTH];
             tileObjects = new GameObject[MINEFIELD_HEIGHT, MINEFIELD_WIDTH, MINEFIELD_DEPTH];
 
-            // Backend initalization
-
-            Progress.SetActive(true);
-            Slider slider = Progress.GetComponentInChildren<Slider>();
-            slider.value = 0;
-            slider.maxValue = tiles.Length;
-
-            BoxCollider collider = _Grid.GetComponent<BoxCollider>();
-            collider.size = new Vector3(TotalSize.x + 30, TotalSize.y + 30, TotalSize.z + 2);
-
-            // Update the camera location to reflect new grid
-            camera.GetComponent<Control.CameraControls>().CenterCamera();
+            InitUI(true);
+            Camera.main.GetComponent<CameraControls>().CenterCamera();
 
             GameObject[] layers = new GameObject[MINEFIELD_HEIGHT];
             for (int y = 0; y < MINEFIELD_HEIGHT; y++) {
-                layers[y] = new GameObject("Layer " + (y + 1)); // Instantiate parent object of following cubes.
-                layers[y].transform.SetParent(_Grid.transform);
+                layers[y] = new GameObject("Layer " + (y + 1));
+                layers[y].transform.SetParent(Grid.transform);
                 for (int x = 0; x < MINEFIELD_WIDTH; x++) {
                     for (int z = 0; z < MINEFIELD_DEPTH; z++) {
-                        // Create the Tile data.
-                        Tile tile = tilePrefabs[Random.Range(0, tilePrefabs.Length)];
-                        tile.TileIndex = new Vector3(x, y, z);
+                        Vector3 pos = new Vector3((x * TilePadding * TileSize), 0 + (y * TilePadding * TileSize), (z * TilePadding * TileSize));
+                        GameObject tileObj = Instantiate(Prefab, pos, Quaternion.identity, layers[y].transform);
+                        Tile tile = tileObj.AddComponent<Tile>();
+                        tile._Color = Random.ColorHSV();
+                        tile._TileIndex = pos;
+                        tile.CreateTile();
 
-                        // Instantiate the Tile's GameObject.
-                        GameObject tileObj = Instantiate(Cube, new Vector3((x * TilePadding * TileSize), 0 + (y * TilePadding * TileSize), (z * TilePadding * TileSize)), Quaternion.identity, layers[y].transform);
                         Vector3 size = new Vector3(TileSize, TileSize, TileSize);
-                        tileObj.transform.Translate(size); // Offset all of the cubes so that 0,0,0 is the corner.
-                        tileObj.GetComponent<Renderer>().sharedMaterial = tile.GetMaterial();
-
-                        // Set key variables and increment slider
+                        tileObj.transform.Translate(size);
+                        tileObj.GetComponent<Renderer>().sharedMaterial = tile._Material;
+                        
                         tileObjects[y, x, z] = tileObj;
                         tiles[y, x, z] = tile;
                         slider.value += 1;
@@ -100,132 +72,47 @@ namespace Minesweeper {
                 }
             }
 
-            // Deactivate slider once finished
-            Progress.SetActive(false);
+            Grid.transform.GetChild(0).position = Middle;
+            Camera.main.GetComponent<CameraControls>().CenterCamera();
+            InitUI(false);
         }
 
-        /// <summary>
-        /// Non-coroutine version of GenerateMinefield() for attmepted use in the Editor when not playing.
-        /// </summary>
-        public void GenerateEditorMinefield() {
-            DestroyMinefield();
+        private void InitUI(bool isStart) {
+            if(isStart) {
+                if (slider == null)
+                    slider = Progress.GetComponentInChildren<Slider>();
+                Progress.SetActive(true);
+                slider.value = 0;
+                slider.maxValue = tiles.Length;
+            } else {
+                Progress.SetActive(false);
+            }
+        }
 
-            tiles = new Tile[MINEFIELD_HEIGHT, MINEFIELD_WIDTH, MINEFIELD_DEPTH];
-            tileObjects = new GameObject[MINEFIELD_HEIGHT, MINEFIELD_WIDTH, MINEFIELD_DEPTH];
-
-            // Update the camera location to reflect new grid
-            camera.GetComponent<Control.CameraControls>().CenterCamera();
-
-            GameObject[] layers = new GameObject[MINEFIELD_HEIGHT];
-            for (int y = 0; y < MINEFIELD_HEIGHT; y++) {
-                layers[y] = new GameObject("Layer " + (y + 1)); // Instantiate parent object of following cubes.
-                layers[y].transform.SetParent(_Grid.transform);
-                for (int x = 0; x < MINEFIELD_WIDTH; x++) {
-                    for (int z = 0; z < MINEFIELD_DEPTH; z++) {
-                        // Create the Tile data.
-                        Tile tile = tilePrefabs[Random.Range(0, tilePrefabs.Length)];
-                        tile.TileIndex = new Vector3(x, y, z);
-
-                        // Instantiate the Tile's GameObject.
-                        GameObject tileObj = Instantiate(Cube, new Vector3((x * TilePadding * TileSize), 0 + (y * TilePadding * TileSize), (z * TilePadding * TileSize)), Quaternion.identity, layers[y].transform);
-                        Vector3 size = new Vector3(TotalSize.x / 2, TotalSize.y / 2, TotalSize.z / 2);
-                        tileObj.transform.Translate(-size); // Offset all of the cubes so that 0,0,0 is the center.
-                        tileObj.GetComponent<Renderer>().sharedMaterial = tile.GetMaterial();
-
-                        // Set key variables and increment slider
-                        tileObjects[y, x, z] = tileObj;
-                        tiles[y, x, z] = tile;
-                    }
+        private Vector3 _MinefieldSize;
+        public Vector3 MinefieldSize {
+            get {
+                if(_MinefieldSize == null || _MinefieldSize == Vector3.zero) {
+                    _MinefieldSize = new Vector3(MINEFIELD_WIDTH, MINEFIELD_HEIGHT, MINEFIELD_DEPTH);
                 }
-            }
-        }
-
-        public int MinefieldWidth {
-            get {
-                return MINEFIELD_WIDTH;
+                return _MinefieldSize;
             }
 
             set {
-                MINEFIELD_WIDTH = value;
+                _MinefieldSize = value;
             }
         }
-
-        public float TotalWidth {
-            get {
-                return (MINEFIELD_WIDTH * TileSize * TilePadding);
-            }
-        }
-
-        public int MinefieldHeight {
-            get {
-                return MINEFIELD_HEIGHT;
-            }
-
-            set {
-                MINEFIELD_HEIGHT = value;
-            }
-        }
-
-        public float TotalHeight {
-            get {
-                return (MINEFIELD_HEIGHT * TileSize * TilePadding);
-            }
-        }
-
-        public int MinefieldDepth {
-            get {
-                return MINEFIELD_DEPTH;
-            }
-
-            set {
-                MINEFIELD_DEPTH = value;
-            }
-        }
-
-        public float TotalDepth {
-            get {
-                return (MINEFIELD_DEPTH * TileSize * TilePadding);
-            }
-        }
-
-
+        
         public Vector3 TotalSize {
             get {
-                return new Vector3(TotalWidth, TotalHeight, TotalDepth);
+                return new Vector3(MINEFIELD_WIDTH * TileSize * TilePadding, MINEFIELD_HEIGHT * TileSize * TilePadding, MINEFIELD_DEPTH * TileSize * TilePadding);
             }
         }
 
         public Vector3 Middle {
             get {
-                return new Vector3(TotalWidth / 2, TotalHeight / 2, TotalDepth / 2);
+                return new Vector3(TotalSize.x / 2, TotalSize.y / 2, TotalSize.z / 2);
             }
         }
-    }
-
-    [CreateAssetMenu(fileName = "New Tile", menuName = "Minesweeper/Tile", order = 1)]
-    public class Tile : ScriptableObject {
-        public Color color;
-        private Vector3 tileIndex;
-
-        private Material mat;
-
-        public Material GetMaterial() {
-            if (mat == null) {
-                mat = new Material(Shader.Find("VertexLit"));
-                mat.color = color;
-            }
-            return mat;
-        }
-
-        public Vector3 TileIndex {
-            get {
-                return tileIndex;
-            }
-
-            set {
-                tileIndex = value;
-            }
-        }
-
     }
 }
