@@ -195,7 +195,11 @@ namespace Minesweeper {
             }
         }
 
-        public Vector3 Middle { get { return new Vector3(TotalWidth / 2, TotalHeight / 2, TotalDepth / 2)} }
+        public Vector3 Middle {
+            get {
+                return new Vector3(TotalWidth / 2, TotalHeight / 2, TotalDepth / 2);
+            }
+        }
     }
 
     [CreateAssetMenu(fileName = "New Tile", menuName = "Minesweeper/Tile", order = 1)]
