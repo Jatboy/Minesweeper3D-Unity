@@ -23,7 +23,14 @@ namespace Control {
         }
         
         void Update() {
-
+            if(Input.GetMouseButtonDown(0)) {
+                RaycastHit hit;
+                if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit, 1000f)) {
+                    Debug.DrawLine(camera.transform.position, hit.point, Color.white);
+                    hit.collider.transform.GetComponent<Renderer>().material.color = Random.ColorHSV(); // Test hit detection
+                    // Destroy(hit.collider.gameObject); // Alternate test hit detection
+                }
+            }
         }
 
         public void MoveCamera() {

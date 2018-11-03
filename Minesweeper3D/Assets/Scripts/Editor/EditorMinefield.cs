@@ -2,7 +2,7 @@
 using UnityEditor;
 using Minesweeper;
 
-namespace Minesweeper { 
+namespace Minesweeper {
     [CustomEditor(typeof(Minefield))]
     public class EditorMinefield : Editor {
 

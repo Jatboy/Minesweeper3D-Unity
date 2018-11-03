@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Minesweeper;
 
 namespace Minesweeper {
+    [RequireComponent(typeof(BoxCollider))]
     public class Minefield : MonoBehaviour {
         public GameObject _Grid; // Parent object of all Generation code.
         public GameObject Cube; // Cube prefab that all tiles share.
@@ -86,8 +87,8 @@ namespace Minesweeper {
 
                         // Instantiate the Tile's GameObject.
                         GameObject tileObj = Instantiate(Cube, new Vector3((x * TilePadding * TileSize), 0 + (y * TilePadding * TileSize), (z * TilePadding * TileSize)), Quaternion.identity, layers[y].transform);
-                        Vector3 size = new Vector3(TotalSize.x / 2, TotalSize.y / 2, TotalSize.z / 2);
-                        tileObj.transform.Translate(-size); // Offset all of the cubes so that 0,0,0 is the center.
+                        /*Vector3 size = new Vector3(TotalSize.x / 2, TotalSize.y / 2, TotalSize.z / 2);
+                        tileObj.transform.Translate(-size); // Offset all of the cubes so that 0,0,0 is the center.*/
                         tileObj.GetComponent<Renderer>().sharedMaterial = tile.GetMaterial();
 
                         // Set key variables and increment slider
