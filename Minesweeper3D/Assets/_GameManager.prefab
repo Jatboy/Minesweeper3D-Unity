@@ -54,6 +54,7 @@ MonoBehaviour:
   Grid: {fileID: 0}
   Prefab: {fileID: 100000, guid: edd463713fbb0994586dc14ea15406f9, type: 3}
   Progress: {fileID: 0}
+  TextPrefab: {fileID: 1661023567952058, guid: acaed7e3a573ec548a2ef62a4e90f6a5, type: 2}
   MineCount: 10
-  TilePadding: 2.5
+  TilePadding: 3
   TileSize: 1
